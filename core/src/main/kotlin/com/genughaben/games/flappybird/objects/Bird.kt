@@ -1,11 +1,12 @@
 package com.genughaben.games.flappybird.objects
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.genughaben.games.flappybird.MainGame
 
-class Bird(val x: Float, val y: Float): Disposable {
+class Bird(x: Float, y: Float): Disposable {
 
     private val gravity = -9.8f
     val movement = MainGame.SPEED
@@ -13,6 +14,7 @@ class Bird(val x: Float, val y: Float): Disposable {
     private val velocity: Vector2 = Vector2(0f, 0f)
     private val size: Float = 30f
     private val texture: Texture = Texture("slice1.png")
+    val bounds: Rectangle = Rectangle(position.x, position.y, size, size)
 
     override fun dispose() {
         texture.dispose()
@@ -34,6 +36,7 @@ class Bird(val x: Float, val y: Float): Disposable {
                 position.y = 0f
             }
             velocity.scl(1f / delta)
+            bounds.setPosition(position.x, position.y)
         }
     }
 

@@ -9,24 +9,30 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.genughaben.games.flappybird.MainGame
 import com.genughaben.games.flappybird.objects.Bird
+import com.genughaben.games.flappybird.objects.TubePair
 
 class GameScreen(private var game: MainGame) : Screen {
     private var batch: SpriteBatch
     private val camera: OrthographicCamera
     private val bird: Bird
     private val img: Texture
+    private val tubes: MutableList<TubePair> = mutableListOf()
+    private val tubeCount = 4
+    private val tubeDistance = 125f
+    private var score: Int = 0
 
     init {
-        this.game = game
         camera = OrthographicCamera()
         camera.setToOrtho(
             false,
             MainGame.WIDTH * 0.5f,
             MainGame.HEIGHT * 0.5f)
-        batch = SpriteBatch();
+        batch = SpriteBatch()
         bird = Bird(50f, 50f)
         img = Texture("libgdx.png")
-
+        for (i in 1 until tubeCount + 1) {
+            tubes.add(TubePair(100 + i *(tubeDistance + TubePair.tubeWidth) ))
+        }
     }
 
     override fun show() {}
@@ -39,20 +45,48 @@ class GameScreen(private var game: MainGame) : Screen {
         batch.begin()
 
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize()*1.7f)
+        for (tubePair in tubes) {
+            batch.draw(tubePair.lowerTubeTexture, tubePair.posLowerTube.x, tubePair.posLowerTube.y, TubePair.tubeWidth,TubePair.tubeHeight)
+            batch.draw(tubePair.upperTubeTexture, tubePair.posUpperTube.x, tubePair.posUpperTube.y, TubePair.tubeWidth, TubePair.tubeHeight)
+        }
         batch.end()
     }
 
     private fun update(delta: Float) {
         handleInput()
         bird.update(delta)
+        for (tubePair in tubes) {
+            if(camera.position.x - camera.viewportWidth * 0.5f > tubePair.posLowerTube.x + TubePair.tubeWidth) {
+                score++
+                print("Score: $score")
+                // 1 punkt,
+                // sound effekt
+                tubePair.reposition(tubePair.posLowerTube.x + ((tubeDistance + TubePair.tubeWidth) * tubeCount))
+            }
+            tubePair.update(delta)
+            if(tubePair.collide(bird)) {
+                gameOver()
+            }
+        }
         camera.position.x = bird.getPosition().x + 80f
         camera.update()
+    }
+
+    private fun gameOver() {
+        score--
+//        if(score > game.getHighScore()) {
+//            game.setHighScore(score)
+//        }
+        print("Score: $score")
+        if(score < 0){
+            game.screen = GameScreen(game)
+        }
     }
 
     private fun handleInput() {
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             bird.jump()
-            System.out.println("Bird flapps")
+//            System.out.println("Bird flapps")
         }
     }
 
@@ -60,5 +94,9 @@ class GameScreen(private var game: MainGame) : Screen {
     override fun pause() {}
     override fun resume() {}
     override fun hide() {}
-    override fun dispose() {}
+    override fun dispose() {
+        bird.dispose()
+        img.dispose()
+        tubes.forEach(TubePair::dispose)
+    }
 }

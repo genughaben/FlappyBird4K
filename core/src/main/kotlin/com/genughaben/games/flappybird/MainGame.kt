@@ -9,7 +9,7 @@ class MainGame : Game() {
 	companion object {
 		val WIDTH: Int = 480
 		val HEIGHT: Int = 800
-		val SPEED = 100f;
+		val SPEED = 50f
 	}
 
 	override fun create() {
