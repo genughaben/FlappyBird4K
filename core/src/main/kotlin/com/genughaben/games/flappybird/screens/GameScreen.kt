@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.genughaben.games.flappybird.MainGame
-import com.genughaben.games.flappybird.objects.Bird
-import com.genughaben.games.flappybird.objects.Ground
-import com.genughaben.games.flappybird.objects.ScoreStage
-import com.genughaben.games.flappybird.objects.TubePair
+import com.genughaben.games.flappybird.objects.*
 
 class GameScreen(private var game: MainGame) : Screen {
 
@@ -26,9 +23,10 @@ class GameScreen(private var game: MainGame) : Screen {
     val batch: SpriteBatch = SpriteBatch()
     val bird: Bird = Bird(50f, 250f)
 
-    val ground = Ground(this.getLeftWindowBoundary())
+    val ground = Ground(this.getWindowLeftBoundary())
     var score = 0
     val scoreStage = ScoreStage()
+    val mountain = Mountain()
 
 
     init {
@@ -39,27 +37,45 @@ class GameScreen(private var game: MainGame) : Screen {
         scoreStage.rebuild()
     }
 
-    fun getLeftWindowBoundary() = camera.position.x - camera.viewportWidth * 0.5f
-
     override fun show() {}
 
     override fun render(delta: Float) {
         update(delta)
-        Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.8f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         batch.projectionMatrix = camera.combined
         batch.begin()
+        mountain.render(batch)
         if(TESTING) {
             batch.draw(test, bird.bounds.x, bird.bounds.y, bird.bounds.width, bird.bounds.height)
         }
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize())
         drawTubes()
         ground.draw(batch)
-        batch.end()
 
+        batch.end()
         scoreStage.render(delta)
     }
+
+    private fun update(delta: Float) {
+        camera.position.x = bird.getPosition().x + 100f
+
+        handleInput()
+        ground.update(this.getWindowLeftBoundary())
+        mountain.update(this.getWindowLeftBoundary())
+        bird.update(delta)
+        updateTubes(delta)
+
+        if(!ground.above(bird.getPosition().y)) {
+            gameOver()
+        }
+        scoreStage.rebuild()
+        camera.update()
+    }
+
+
+    fun getWindowLeftBoundary() = camera.position.x - camera.viewportWidth * 0.5f
 
     fun drawTubes() {
         for (tubePair in tubes) {
@@ -68,22 +84,9 @@ class GameScreen(private var game: MainGame) : Screen {
         }
     }
 
-    private fun update(delta: Float) {
-        handleInput()
-        bird.update(delta)
-        updateTubes(delta)
-        camera.position.x = bird.getPosition().x + 100f
-        camera.update()
-        ground.update(this.getLeftWindowBoundary())
-        if(!ground.above(bird.getPosition().y)) {
-            gameOver()
-        }
-        scoreStage.rebuild()
-    }
-
     fun updateTubes(delta: Float) {
         for (tubePair in tubes) {
-            if( this.getLeftWindowBoundary() > tubePair.posLowerTube.x + TubePair.tubeWidth) {
+            if( this.getWindowLeftBoundary() > tubePair.posLowerTube.x + TubePair.tubeWidth) {
                 score++
                 scoreStage.updateScore(score)
                 // sound effekt
@@ -124,5 +127,6 @@ class GameScreen(private var game: MainGame) : Screen {
         test.dispose()
         batch.dispose()
         scoreStage.dispose()
+        mountain.dispose()
     }
 }
