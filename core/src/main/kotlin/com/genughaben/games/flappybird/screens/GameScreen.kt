@@ -12,6 +12,9 @@ import com.genughaben.games.flappybird.objects.Bird
 import com.genughaben.games.flappybird.objects.TubePair
 
 class GameScreen(private var game: MainGame) : Screen {
+
+    val TESTING = false
+
     private var batch: SpriteBatch
     private val camera: OrthographicCamera
     private val bird: Bird
@@ -20,6 +23,7 @@ class GameScreen(private var game: MainGame) : Screen {
     private val tubeCount = 4
     private val tubeDistance = 125f
     private var score: Int = 0
+    private val test: Texture = Texture("boundsBox.png")
 
     init {
         camera = OrthographicCamera()
@@ -28,7 +32,7 @@ class GameScreen(private var game: MainGame) : Screen {
             MainGame.WIDTH * 0.5f,
             MainGame.HEIGHT * 0.5f)
         batch = SpriteBatch()
-        bird = Bird(50f, 50f)
+        bird = Bird(50f, 250f)
         img = Texture("libgdx.png")
         for (i in 1 until tubeCount + 1) {
             tubes.add(TubePair(100 + i *(tubeDistance + TubePair.tubeWidth) ))
@@ -43,8 +47,10 @@ class GameScreen(private var game: MainGame) : Screen {
 
         batch.projectionMatrix = camera.combined
         batch.begin()
-
-        batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize()*1.7f)
+        if(TESTING) {
+            batch.draw(test, bird.bounds.x, bird.bounds.y, bird.bounds.width, bird.bounds.height)
+        }
+        batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize())
         for (tubePair in tubes) {
             batch.draw(tubePair.lowerTubeTexture, tubePair.posLowerTube.x, tubePair.posLowerTube.y, TubePair.tubeWidth,TubePair.tubeHeight)
             batch.draw(tubePair.upperTubeTexture, tubePair.posUpperTube.x, tubePair.posUpperTube.y, TubePair.tubeWidth, TubePair.tubeHeight)
@@ -98,5 +104,6 @@ class GameScreen(private var game: MainGame) : Screen {
         bird.dispose()
         img.dispose()
         tubes.forEach(TubePair::dispose)
+        test.dispose()
     }
 }

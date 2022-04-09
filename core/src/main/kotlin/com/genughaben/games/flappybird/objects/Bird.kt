@@ -13,10 +13,12 @@ class Bird(x: Float, y: Float): Disposable {
     val movement = MainGame.SPEED
     private val position: Vector2 = Vector2(x, y)
     private val velocity: Vector2 = Vector2(0f, 0f)
-    private val size: Float = 30f
+    private val size: Float = 50f
     private val texture: Texture = Texture("bird.png")
     private val animation = Animator(TextureRegion(texture), 5, 0.5f)
-    val bounds: Rectangle = Rectangle(position.x, position.y, size, size)
+    val offsetX = 5
+    val offsetY = 10
+    val bounds: Rectangle = Rectangle(x + offsetX, y + offsetY, size - offsetX, size - offsetY)
 
     override fun dispose() {
         texture.dispose()
@@ -39,13 +41,13 @@ class Bird(x: Float, y: Float): Disposable {
                 position.y = 0f
             }
             velocity.scl(1f / delta)
-            bounds.setPosition(position.x, position.y)
+            bounds.setPosition(position.x + offsetX, position.y + offsetY)
         }
     }
 
     fun jump() {
         if(position.y < MainGame.HEIGHT.toFloat()/2 - size) {
-            velocity.y = 250f
+            velocity.y = 150f
         } else {
             velocity.y = 0f
         }
@@ -62,6 +64,4 @@ class Bird(x: Float, y: Float): Disposable {
     fun getTexture(): TextureRegion {
         return animation.getFrame()
     }
-
-
 }
