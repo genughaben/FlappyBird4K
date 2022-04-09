@@ -35,3 +35,18 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
+
+# Export to native executables
+
+## MacOS X executable
+
+1. Download OpenJDK 15 to the root folder of this project: [OpenJDK 15](https://www.oracle.com/java/technologies/javase/jdk15-archive-downloads.html).
+2. Download `<pacr*.jar>` to the root folder of this project: [Packr](https://github.com/libgdx/packr).
+3. Copy `export_mac.json.template` to `export.json` and replace `<OpenJDK15.tar.gz>` with the  path to your downloaded OpenJDK15.tar.gz file.
+4. Run `gradle lwjgl3:jar` to build the application's runnable jar.
+5. Run `java -jar <path to <pacr*.jar>> export_mac.json.json` to generate the Flappy.app macOS executable.
+
+Instead of 4. and 5. you can also use `sudo bash export_macos_executable.sh`  to run the application.
+NB: for that to work you need to modify line 5 so your local version of `<pacr*.jar>` is used.
+
+6. After executing all the steps above, you can find the executable at `out-mac/Contents/MacOS/FlappyBird.app`.

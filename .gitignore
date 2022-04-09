@@ -69,3 +69,9 @@ nb-configuration.xml
 *~
 *.*#
 *#*#
+
+## export
+openjdk-15.0.2_osx-x64_bin.tar.gz
+packr-all-4.0.0.jar
+export_mac.json
+out-mac/

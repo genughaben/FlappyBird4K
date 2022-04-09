@@ -1,0 +1,23 @@
+{
+  "platform": "mac",
+  "jdk": "<OpenJDK15.tar.gz>",
+  "executable": "FlappyBird.app",
+  "classpath": [
+    "lwjgl3/build/libs/flappy-bird-0.0.1.jar"
+  ],
+  "removelibs": [
+    "lwjgl3/build/libs/flappy-bird-0.0.1.jar"
+  ],
+  "mainclass": "com.genughaben.games.flappybird.lwjgl3.Lwjgl3Launcher",
+  "vmargs": [
+    "Xmx1G", "XstartOnFirstThread"
+  ],
+  "resources": [
+    "core",
+    "lwjgl3",
+    "assets",
+    "lwjgl3/src/main/resources"
+  ],
+  "minimizejre": "soft",
+  "output": "out-mac"
+}
