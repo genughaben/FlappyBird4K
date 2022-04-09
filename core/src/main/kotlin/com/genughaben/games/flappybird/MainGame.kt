@@ -7,8 +7,8 @@ import com.genughaben.games.flappybird.screens.GameScreen
 class MainGame : Game() {
 
 	companion object {
-		val WIDTH: Int = 480
-		val HEIGHT: Int = 800
+		val WIDTH: Int = 600
+		val HEIGHT: Int = 1000
 		val SPEED = 50f
 	}
 

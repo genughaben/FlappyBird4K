@@ -9,37 +9,40 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.genughaben.games.flappybird.MainGame
 import com.genughaben.games.flappybird.objects.Bird
+import com.genughaben.games.flappybird.objects.Ground
+import com.genughaben.games.flappybird.objects.ScoreStage
 import com.genughaben.games.flappybird.objects.TubePair
 
 class GameScreen(private var game: MainGame) : Screen {
 
     val TESTING = false
 
-    private var batch: SpriteBatch
-    private val camera: OrthographicCamera
-    private val bird: Bird
-    private val img: Texture
     private val tubes: MutableList<TubePair> = mutableListOf()
+    val camera = OrthographicCamera()
     private val tubeCount = 4
     private val tubeDistance = 125f
-    private var score: Int = 0
     private val test: Texture = Texture("boundsBox.png")
 
+    val batch: SpriteBatch = SpriteBatch()
+    val bird: Bird = Bird(50f, 250f)
+
+    val ground = Ground(this.getLeftWindowBoundary())
+    var score = 0
+    val scoreStage = ScoreStage()
+
+
     init {
-        camera = OrthographicCamera()
-        camera.setToOrtho(
-            false,
-            MainGame.WIDTH * 0.5f,
-            MainGame.HEIGHT * 0.5f)
-        batch = SpriteBatch()
-        bird = Bird(50f, 250f)
-        img = Texture("libgdx.png")
+        camera.setToOrtho(false, MainGame.WIDTH * 0.5f, MainGame.HEIGHT * 0.5f)
         for (i in 1 until tubeCount + 1) {
             tubes.add(TubePair(100 + i *(tubeDistance + TubePair.tubeWidth) ))
         }
+        scoreStage.rebuild()
     }
 
+    fun getLeftWindowBoundary() = camera.position.x - camera.viewportWidth * 0.5f
+
     override fun show() {}
+
     override fun render(delta: Float) {
         update(delta)
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
@@ -51,21 +54,38 @@ class GameScreen(private var game: MainGame) : Screen {
             batch.draw(test, bird.bounds.x, bird.bounds.y, bird.bounds.width, bird.bounds.height)
         }
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize())
+        drawTubes()
+        ground.draw(batch)
+        batch.end()
+
+        scoreStage.render(delta)
+    }
+
+    fun drawTubes() {
         for (tubePair in tubes) {
             batch.draw(tubePair.lowerTubeTexture, tubePair.posLowerTube.x, tubePair.posLowerTube.y, TubePair.tubeWidth,TubePair.tubeHeight)
             batch.draw(tubePair.upperTubeTexture, tubePair.posUpperTube.x, tubePair.posUpperTube.y, TubePair.tubeWidth, TubePair.tubeHeight)
         }
-        batch.end()
     }
 
     private fun update(delta: Float) {
         handleInput()
         bird.update(delta)
+        updateTubes(delta)
+        camera.position.x = bird.getPosition().x + 100f
+        camera.update()
+        ground.update(this.getLeftWindowBoundary())
+        if(!ground.above(bird.getPosition().y)) {
+            gameOver()
+        }
+        scoreStage.rebuild()
+    }
+
+    fun updateTubes(delta: Float) {
         for (tubePair in tubes) {
-            if(camera.position.x - camera.viewportWidth * 0.5f > tubePair.posLowerTube.x + TubePair.tubeWidth) {
+            if( this.getLeftWindowBoundary() > tubePair.posLowerTube.x + TubePair.tubeWidth) {
                 score++
-                print("Score: $score")
-                // 1 punkt,
+                scoreStage.updateScore(score)
                 // sound effekt
                 tubePair.reposition(tubePair.posLowerTube.x + ((tubeDistance + TubePair.tubeWidth) * tubeCount))
             }
@@ -74,16 +94,14 @@ class GameScreen(private var game: MainGame) : Screen {
                 gameOver()
             }
         }
-        camera.position.x = bird.getPosition().x + 80f
-        camera.update()
     }
 
     private fun gameOver() {
         score--
+        scoreStage.updateScore(score)
 //        if(score > game.getHighScore()) {
 //            game.setHighScore(score)
 //        }
-        print("Score: $score")
         if(score < 0){
             game.screen = GameScreen(game)
         }
@@ -92,7 +110,6 @@ class GameScreen(private var game: MainGame) : Screen {
     private fun handleInput() {
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             bird.jump()
-//            System.out.println("Bird flapps")
         }
     }
 
@@ -102,8 +119,10 @@ class GameScreen(private var game: MainGame) : Screen {
     override fun hide() {}
     override fun dispose() {
         bird.dispose()
-        img.dispose()
+        ground.dispose()
         tubes.forEach(TubePair::dispose)
         test.dispose()
+        batch.dispose()
+        scoreStage.dispose()
     }
 }
