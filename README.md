@@ -1,4 +1,13 @@
-# flappy-bird
+# Flappy Bird 4K
+
+## Inspiration
+
+This is a rewrite of the classic game [Flappy Bird](https://en.wikipedia.org/wiki/Flappy_Bird).
+Especially this code base is heavily inspired by [Flappy Bird in Java](https://github.com/BB-Store/FlappyBirdClone-LibGDX/blob/main/core/src/screens/GameScreen.java).
+
+But I pretend that this version is easier to read as it is written in Kotlin and more OOP.
+
+## Base
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/tommyettinger/gdx-liftoff).
 
