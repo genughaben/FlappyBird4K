@@ -45,8 +45,17 @@ For example, `core:clean` removes `build` folder only from the `core` project.
 3. Copy `export_mac.json.template` to `export.json` and replace `<OpenJDK15.tar.gz>` with the  path to your downloaded OpenJDK15.tar.gz file.
 4. Run `gradle lwjgl3:jar` to build the application's runnable jar.
 5. Run `java -jar <path to <pacr*.jar>> export_mac.json.json` to generate the Flappy.app macOS executable.
-
 Instead of 4. and 5. you can also use `sudo bash export_macos_executable.sh`  to run the application.
 NB: for that to work you need to modify line 5 so your local version of `<pacr*.jar>` is used.
 
 6. After executing all the steps above, you can find the executable at `out-mac/Contents/MacOS/FlappyBird.app`.
+7. Notarization: https://www.joelotter.com/2020/08/14/macos-java-notarization.html
+
+# Github Actions - automated builds
+
+Sources to solve: 
+* https://github.com/hendraanggrian/packaging-gradle-plugin
+* https://github.com/libgdx/libgdx/tree/master/.github/workflows
+* https://github.com/Interrupt/delverengine
+* https://github.com/Interrupt/delverengine/blob/master/.github/workflows/gradle.yml
+* https://github.com/actions/setup-java

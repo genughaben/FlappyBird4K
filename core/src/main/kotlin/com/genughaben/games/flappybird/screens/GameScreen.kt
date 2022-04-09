@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.genughaben.games.flappybird.MainGame
 import com.genughaben.games.flappybird.objects.*
+import objectives.Clouds
 
 class GameScreen(private var game: MainGame) : Screen {
 
@@ -27,6 +28,7 @@ class GameScreen(private var game: MainGame) : Screen {
     var score = 0
     val scoreStage = ScoreStage()
     val mountain = Mountain()
+    val clouds = Clouds(camera.position.x)
 
 
     init {
@@ -47,6 +49,7 @@ class GameScreen(private var game: MainGame) : Screen {
         batch.projectionMatrix = camera.combined
         batch.begin()
         mountain.render(batch)
+        clouds.render(batch)
         if(TESTING) {
             batch.draw(test, bird.bounds.x, bird.bounds.y, bird.bounds.width, bird.bounds.height)
         }
@@ -64,6 +67,7 @@ class GameScreen(private var game: MainGame) : Screen {
         handleInput()
         ground.update(this.getWindowLeftBoundary())
         mountain.update(this.getWindowLeftBoundary())
+        clouds.update(camera.position.x, camera.viewportWidth, delta)
         bird.update(delta)
         updateTubes(delta)
 
